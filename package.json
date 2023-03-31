@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron backend/index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/ItzLukynek/Work-Attendance/issues"
   },
-  "homepage": "https://github.com/ItzLukynek/Work-Attendance#readme"
+  "homepage": "https://github.com/ItzLukynek/Work-Attendance#readme",
+  "dependencies": {
+    "electron": "^23.2.1",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  }
 }
