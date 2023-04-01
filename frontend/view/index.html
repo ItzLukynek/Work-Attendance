@@ -13,7 +13,7 @@
   <script src="https://kit.fontawesome.com/8cb19e38e8.js" crossorigin="anonymous"></script>
   <style>
     .navbar {
-      height: 100vh;
+      height: calc(100vh - 50px);
       width: 250px;
     }
 
@@ -46,13 +46,15 @@
 
 
     body {
-      padding: 0px;
+      padding:  0px;
 
     }
 
     #content {
       background-color: rgba(0, 0, 0, 0.822);
-      padding: 20px 3%;
+      padding:2% 3%;
+      overflow: auto;
+      max-height: calc(100vh - 50px);
     }
 
    
@@ -91,19 +93,25 @@
       font-size: 25px;
       color: #fff;
     }
+    .topbar{
+      width: 100%;
+      height: 50px;
+}
   </style>
 </head>
 
 <body>
-  <div class="window-controls">
-    <div class="window-control minimize">
-      <i class="fas fa-window-minimize"></i>
-    </div>
-    <div class="window-control maximize">
-      <i class="fas fa-window-maximize"></i>
-    </div>
-    <div class="window-control close">
-      <i class="fas fa-times"></i>
+  <div class="topbar bg-dark">
+    <div class="window-controls">
+      <div class="window-control minimize">
+        <i class="fas fa-window-minimize"></i>
+      </div>
+      <div class="window-control maximize">
+        <i class="fas fa-window-maximize"></i>
+      </div>
+      <div class="window-control close">
+        <i class="fas fa-times"></i>
+      </div>
     </div>
   </div>
   <div class="d-flex flex-row">
