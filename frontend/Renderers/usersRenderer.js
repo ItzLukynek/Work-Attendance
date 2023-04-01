@@ -1,5 +1,3 @@
-const userroot = document.getElementById('userroot');
-
 
  function getUsers() {
     try {
@@ -14,6 +12,7 @@ const userroot = document.getElementById('userroot');
 
 
 function renderUsersPage(){
+    let userdiv = document.getElementById('users');
     let users = getUsers();
     console.log(users);
     let html = '';
@@ -21,6 +20,7 @@ function renderUsersPage(){
         let name = user.firstName +" "+ user.lastName;
         html +=`
         <div class="card  bg-dark text-white">
+        <img src="../../public/Images/User.png" class="card-img" alt="...">
         <div class="card-body d-flex flex-column align-items-center">
             <h5 class="card-title">${name}</h5>
             <p class="card-text">Clock in or out for ${name}</p>
@@ -32,7 +32,7 @@ function renderUsersPage(){
         </div>
       `
     });
-    userroot.innerHTML = html;
+    userdiv.innerHTML = html;
 }
 
 document.addEventListener('DOMContentLoad',renderUsersPage());

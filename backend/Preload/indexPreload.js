@@ -1,4 +1,4 @@
-const { contextBridge } = require('electron');
+const { contextBridge,ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
@@ -15,7 +15,19 @@ function getUsers() {
   }
   
   contextBridge.exposeInMainWorld('api', {
+    //get users
     getUsers: () => getUsers(),
+    //controls
+    minimize: () => {
+      ipcRenderer.send('window-minimize')
+    },
+    maximize: () => {
+      ipcRenderer.send('window-maximize')
+    },
+    close: () => {
+      ipcRenderer.send('window-close')
+    },
+    
   });
 
 
