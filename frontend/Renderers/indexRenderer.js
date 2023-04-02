@@ -40,7 +40,7 @@ $(document).ready(function() {
 //controls of the window
 const minimizeButton = document.querySelector('.minimize')
 const closeButton = document.querySelector('.closew')
-console.log(closeButton);
+
 minimizeButton.addEventListener('click', () => {
   window.api.minimize()
 })

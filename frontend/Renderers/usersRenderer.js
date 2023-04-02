@@ -53,9 +53,13 @@ async function renderUsersPage() {
         let clockOutTime = userLog?.clockedout;
         let clockOutDisabled = clockOutTime || !clockInTime ? 'disabled' : '';
         let clockat = "";
-        if(clockInDisabled == 'disabled'){
+        let clockout = "";
+        if(clockInTime){
             clockat = ": " + clockInTime.substr(11,5);
         } 
+        if(clockOutTime){
+            clockout = ": " + clockOutTime.substr(11,5);
+        }
 
         html += `
             <div class="card bg-dark text-white">
@@ -64,7 +68,7 @@ async function renderUsersPage() {
                     <h5 class="card-title">${name}</h5>
                     <div class="d-grid gap-2 d-flex justify-content center">
                     <button class="btn btn-primary" onclick="clockIn(${user.id}, this ,this.nextElementSibling)" type="button" ${clockInDisabled}>Příchod${clockat}</button>
-                    <button class="btn btn-secondary" onclick="clockOut(${user.id},this)" type="button" ${clockOutDisabled}>Odchod</button>
+                    <button class="btn btn-secondary" onclick="clockOut(${user.id},this)" type="button" ${clockOutDisabled}>Odchod${clockout}</button>
                   </div>
                   
                     </div>
