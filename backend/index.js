@@ -3,7 +3,7 @@ const path = require('path');
 const moment = require('moment');
 const fs = require('fs');
 
-let mainWindow ;
+let mainWindow 
 const createWindow = () =>{
      mainWindow = new BrowserWindow({
         frame:false,
@@ -29,6 +29,16 @@ app.whenReady().then(() =>{
           createWindow()
         }
       })
+
+    ipcMain.on('window-minimize', () => {
+    mainWindow.minimize()
+    })
+    
+    ipcMain.on('window-close', () => {
+        console.log('Received window-close event');
+    mainWindow.close()
+    })
+    
 })
 //refresh the page and data
 function newDay() {
@@ -65,15 +75,4 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
   })
 
-ipcMain.on('window-minimize', () => {
-mainWindow.minimize()
-})
-
-ipcMain.on('window-maximize', () => {
-mainWindow.maximize()
-})
-
-ipcMain.on('window-close', () => {
-mainWindow.close()
-})
 

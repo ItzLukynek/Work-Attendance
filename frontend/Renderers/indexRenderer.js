@@ -39,10 +39,8 @@ $(document).ready(function() {
 
 //controls of the window
 const minimizeButton = document.querySelector('.minimize')
-const maximizeButton = document.querySelector('.maximize')
-const closeButton = document.querySelector('.close')
-const hideButton = document.querySelector('.hide')
-
+const closeButton = document.querySelector('.closew')
+console.log(closeButton);
 minimizeButton.addEventListener('click', () => {
   window.api.minimize()
 })
