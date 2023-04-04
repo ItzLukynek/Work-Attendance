@@ -2,6 +2,7 @@ const {BrowserWindow,app,ipcMain} = require('electron');
 const path = require('path');
 const moment = require('moment');
 const fs = require('fs');
+const localShortcut = require('electron-localshortcut')
 
 let mainWindow 
 const createWindow = () =>{
@@ -10,14 +11,20 @@ const createWindow = () =>{
         webPreferences: {
             preload: path.join(__dirname, 'Preload/indexPreload.js'),
             sandbox: false,
-            contextIsolation:true
+            contextIsolation:true,
+            nodeIntegration: false
         },
     });
     
     mainWindow.setMenu(null);
     mainWindow.loadFile("../frontend/view/index.html")
     mainWindow.maximize();
-    mainWindow.webContents.openDevTools()
+
+    // Register the F12 shortcut to open the DevTools
+    localShortcut.register(mainWindow, 'Ctrl+F12', () => {
+        mainWindow.webContents.openDevTools()
+    })
+
     
 }
 

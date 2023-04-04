@@ -12,6 +12,15 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://kit.fontawesome.com/8cb19e38e8.js" crossorigin="anonymous"></script>
   <style>
+
+  @font-face {
+        font-family: "kanit";
+        src: url("../../public/fonts/Kanit/Kanit-Regular.ttf");
+    }
+    body{
+      font-family: kanit;
+      font-weight: 700;
+    }
     .navbar {
       height: calc(100vh - 50px);
       width: 250px;
@@ -33,14 +42,11 @@
       transition: all 0.3s ease;
     }
 
-    .nav-link:hover {
-      background-color: #343a40;
-      color: #fff;
-      text-decoration: none;
-    }
+    
 
     .nav-link.active {
-      background-color: #343a40;
+      transition: 1.5s ease;
+      margin-left: 10px;
       color: #fff;
     }
 
@@ -51,7 +57,7 @@
     }
 
     #content {
-      background-color: rgba(0, 0, 0, 0.822);
+      background-color: #333333;
       padding:2% 3%;
       overflow: auto;
       max-height: calc(100vh - 50px);
@@ -132,6 +138,9 @@
   text-decoration: none;
   cursor: pointer;
 }
+.bcolor{
+  background-color: #1f1f1f;
+}
 
   </style>
 </head>
@@ -143,7 +152,7 @@
       <p id="error-message"></p>
     </div>
   </div>
-  <div class="topbar bg-dark">
+  <div class="topbar bcolor">
     <div class="window-controls">
       <div class="window-control minimize">
         <i class="fas fa-window-minimize"></i>
@@ -154,7 +163,7 @@
     </div>
   </div>
   <div class="d-flex flex-row">
-    <nav class="navbar navbar-dark bg-dark ">
+    <nav class="navbar navbar-dark bcolor ">
       <ul class="ml-3 navbar-nav flex-column">
         <li class="nav-item">
           <a class="nav-link load-page active" href="#" data-url="../view/users.html">Uživatelé</a>
@@ -170,7 +179,7 @@
         </li>
       </ul>
     </nav>
-    <div id="content">
+    <div id="content" class="w-100">
 
     </div>
   </div>

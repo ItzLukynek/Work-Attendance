@@ -14,7 +14,16 @@ function getUsers() {
       return null;
     }
 }
-
+//get data from timelog.json
+function getTimelog() {
+  try {
+    const rawData = fs.readFileSync(path.join(__dirname, '../json/timelog.json'));
+    return JSON.parse(rawData);
+  } catch (error) {
+    showErrorModal(error);
+    return null;
+  }
+}
 //clocking in and out
 
 // Clock in the current user for today
@@ -112,7 +121,8 @@ function clockOut(userId) {
     },
     //clocking in and out
     clockIn: (userid) => clockIn(userid),
-    clockOut: (userid) => clockOut(userid)
+    clockOut: (userid) => clockOut(userid),
+    getTimelog: () => getTimelog()
 
     
   });

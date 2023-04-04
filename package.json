@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ItzLukynek/Work-Attendance#readme",
   "dependencies": {
     "electron": "^23.2.1",
+    "electron-localshortcut": "^3.2.1",
     "fs": "^0.0.1-security",
     "moment": "^2.29.4",
     "path": "^0.12.7"
