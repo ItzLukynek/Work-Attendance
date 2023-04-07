@@ -69,6 +69,10 @@
       padding: 10px;
       font-weight: bold;
       font-size: 22px;
+      
+    }
+    thead{
+      border-bottom: white 2px solid;
     }
     .usertable tr:last-child{
       border-bottom: none;
@@ -88,9 +92,7 @@
     }
     
     
-    .usertable a i {
-      margin-right: 5px;
-    }
+    
     
     .toolfunctions {
       flex: 1 1 300px;
@@ -123,7 +125,110 @@
       background-color: #222;
       border: none !important;;
     }
-       
+
+    .info-icon{
+      border-radius: 8px;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .toolmodal h2{
+        font-size: 25px;
+        font-weight: bold;
+        color: white;
+    }
+    .toolmodal {
+        
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.toolmodal.active {
+  opacity: 1;
+}
+
+.toolmodal-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+
+}
+
+.toolmodal.active .toolmodal-background {
+  opacity: 1;
+}
+.toolmodal-content{
+    text-align: center;
+    background-color: #222;
+    padding: 20px 35px;
+    border-radius: 10px;
+    color: white;
+}
+     .timetable{
+        max-height: 400px;
+     } 
+     .clockinout-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.clockinout-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .clockinout-table div div  div {
+    padding: 8px;
+    text-align: center;
+   
+    border-collapse: collapse;
+    width: 100px;
+    font-size: 18px;
+
+  }
+  
+  .clockinout-table div div {
+    border-bottom: 1px black solid;
+  }
+  .clockinout-table {
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+  }
+  
+
+  .clockinout-table .date {
+    font-weight: bold;
+  }
+
+  .clockinout-table .weekday {
+    font-size: smaller;
+  }
+
+  .clockinout-table .clock {
+    font-size: smaller;
+  }
+
+
+
     </style>
 </head>
 <body>

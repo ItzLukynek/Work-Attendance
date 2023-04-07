@@ -5,15 +5,16 @@ const moment = require('moment');
 
 //get data from users.json
 function getUsers() {
-    try {
-      const rawData = fs.readFileSync(path.join(__dirname, '../json/users.json'));
-      let users = JSON.parse(rawData);
-      return users.users;
-    } catch (error) {
-      showErrorModal(error);
-      return null;
-    }
+  try {
+    const rawData = fs.readFileSync(path.join(__dirname, '../json/users.json'));
+    let users = JSON.parse(rawData);
+    return users.users;
+  } catch (error) {
+    showErrorModal(error);
+    return null;
+  }
 }
+
 //get data from timelog.json
 function getTimelog() {
   try {

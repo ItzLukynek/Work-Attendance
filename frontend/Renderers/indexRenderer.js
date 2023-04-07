@@ -24,8 +24,27 @@ window.addEventListener('message', event => {
   });
   
 
+  function scheduleNewDay() {
+    const now = new Date();
+    const millisUntilMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1, // Tomorrow
+      0, // Midnight hours
+      0, // Midnight minutes
+      0 // Midnight seconds
+    ) - now;
+    setTimeout(() => {
+        $('#content').load('../view/users.html'); //reload at midnight
+      scheduleNewDay(); // Schedule the task again for the next midnight
+    }, millisUntilMidnight);
+}
+  
+
+
 // for loading html files as pages
 $(document).ready(function() {
+    scheduleNewDay();
     $('#content').load('../view/users.html'); //load users.html as default page
 
     $('.load-page').click(function(e) {
