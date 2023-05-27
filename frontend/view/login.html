@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+		.card {
+
+			border: none;
+			color: #f5f5f5;
+		}
+		.card-title {
+			color: #f5f5f5;
+		}
+		.form-label {
+			color: #f5f5f5;
+		}
+		.form-control {
+			background-color: #4e4e4e;
+			border: none;
+			color: #f5f5f5;
+		}
+		.form-control:focus {
+			background-color: #616161;
+			border-color: #f5f5f5;
+			box-shadow: none;
+			color: #f5f5f5;
+		}
+		.btn-primary {
+			background-color: #1e88e5;
+			border-color: #1e88e5;
+			color: #f5f5f5;
+		}
+		.btn-primary:hover,
+		.btn-primary:focus {
+			background-color: #1565c0;
+			border-color: #1565c0;
+			color: #f5f5f5;
+		}
+	</style>
+</head>
+<body>
+    <div class="container-fluid">
+		<div class="row justify-content-center align-items-center " style="margin-top: 20%;">
+			<div class="col-md-6 col-lg-4">
+				<div class="card bcolor">
+					<div class="card-body">
+						<h3 class="card-title text-center">Login</h3>
+
+							<div class="mb-3">
+								<label for="password" class="form-label">Password</label>
+								<input type="password" class="form-control" id="password" name="password" required>
+							</div>
+							<div class="d-grid">
+								<button onclick="verifyPassword()" class="btn btn-primary">Login</button>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+    <script src="../Renderers/loginRenderer.js"></script>
+</body>
+</html>

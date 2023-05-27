@@ -43,10 +43,9 @@ window.addEventListener('message', event => {
 
 
 // for loading html files as pages
-$(document).ready(function() {
+$(document).ready(async function() {
     scheduleNewDay();
     $('#content').load('../view/users.html'); //load users.html as default page
-
     $('.load-page').click(function(e) {
         $(".nav-link").removeClass("active");
         $(this).addClass("active");
