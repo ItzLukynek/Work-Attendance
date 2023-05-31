@@ -1,1 +1,72 @@
-[{"date":"2023-05-26","users":[{"id":1,"shift0":{"clockedin":"2023-05-26 12:59:47","clockedout":"2023-05-26 12:59:48"},"shift1":{"clockedin":"2023-05-26 13:02:08","clockedout":""}},{"id":2,"shift0":{"clockedin":"2023-05-26 13:08:05","clockedout":"2023-05-26 13:08:06"},"shift1":{"clockedin":"2023-05-26 13:08:07","clockedout":"2023-05-26 13:08:10"}},{"id":4,"shift0":{"clockedin":"2023-05-26 13:08:42","clockedout":"2023-05-26 13:08:46"},"shift1":{"clockedin":"2023-05-26 13:08:48","clockedout":""}},{"id":6,"shift0":{"clockedin":"2023-05-26 13:12:18","clockedout":"2023-05-26 13:12:19"},"shift1":{"clockedin":"2023-05-26 13:12:19","clockedout":"2023-05-26 13:12:20"}},{"id":7,"shift0":{"clockedin":"2023-05-26 13:12:32","clockedout":"2023-05-26 13:12:34"},"shift1":{"clockedin":"2023-05-26 13:12:39","clockedout":"2023-05-26 13:12:43"}}]},{"date":"2023-05-27","users":[{"id":3,"shift0":{"clockedin":"2023-05-27 18:21:39","clockedout":"2023-05-27 18:21:40"},"shift1":{"clockedin":"2023-05-27 18:21:42","clockedout":"2023-05-27 18:21:43"}},{"id":4,"shift0":{"clockedin":"2023-05-27 18:21:47","clockedout":"2023-05-27 18:21:48"},"shift1":{"clockedin":"","clockedout":""}},{"id":1,"shift0":{"clockedin":"2023-05-27 19:19:33","clockedout":"2023-05-27 19:19:47"},"shift1":{"clockedin":"","clockedout":""}}]}]
+[
+    {
+        "date": "2023-05-29",
+        "users": [
+            {
+                "id": 1,
+                "shift0": {
+                    "clockedin": "2023-05-29 9:00:33",
+                    "clockedout": "2023-05-29 15:30:35"
+                },
+                "shift1": {
+                    "clockedin": "2023-05-29 15:46:35",
+                    "clockedout": "2023-05-29 16:00:36"
+                }
+            }
+        ]
+    },
+    {
+        "date": "2023-05-30",
+        "users": [
+            {
+                "id": 2,
+                "shift0": {
+                    "clockedin": "2023-05-30 13:47:18",
+                    "clockedout": "2023-05-30 13:47:19"
+                },
+                "shift1": {
+                    "clockedin": "2023-05-30 13:47:28",
+                    "clockedout": "2023-05-30 13:47:28"
+                }
+            },
+            {
+                "id": 3,
+                "shift0": {
+                    "clockedin": "2023-05-30 13:54:19",
+                    "clockedout": "2023-05-30 13:54:20"
+                },
+                "shift1": {
+                    "clockedin": "",
+                    "clockedout": ""
+                }
+            }
+        ]
+    },
+    {
+        "date": "2023-05-31",
+        "users": [
+            {
+                "id": 1,
+                "shift0": {
+                    "clockedin": "2023-05-31 09:53:55",
+                    "clockedout": "2023-05-31 09:54:05"
+                },
+                "shift1": {
+                    "clockedin": "",
+                    "clockedout": "2023-05-31 09:54:27"
+                }
+            },
+            {
+                "id": 2,
+                "shift0": {
+                    "clockedin": "2023-05-31 09:54:52",
+                    "clockedout": "2023-05-31 09:54:53"
+                },
+                "shift1": {
+                    "clockedin": "",
+                    "clockedout": "2023-05-31 10:17:46"
+                }
+            }
+        ]
+    }
+]

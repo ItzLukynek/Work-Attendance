@@ -55,6 +55,8 @@ function formatTime(time) {
 
 function generateClockInAndOutTable(userId, month, year) {
   const clockInAndOutTimes = getClockInAndOutTimes(userId, month, year);
+  
+  let workHours = window.api.calculateWorkTime(userId,year,month)
   console.log(clockInAndOutTimes);
 
   let html = '<div class="mt-3 mb-3 clockinout-table d-flex flex-row">\n';
@@ -100,6 +102,8 @@ function generateClockInAndOutTable(userId, month, year) {
   html += '</table>';
   html += '</div>';
   html += '</div>';
+  html += `<div class="w-100 d-flex justify-content-start"><div>Počet odpracovaných hodin: ${workHours}</div></div>`;
+    
 
   return html;
 }
@@ -164,6 +168,14 @@ function showUserSettings(userId) {
     }
   });
 }
+
+function prevMonth(userId,month,year){
+  let usermonth = generateClockInAndOutTable(userId , month, year);
+
+  document.getElementById("usermonth").innerHTML = usermonth;
+  document.getElementById("prevMonth").disabled = true;
+}
+
 function showMoreInfo(userId) {
   const users = window.api.getUsers();
   let user = users.find(user => user.id === userId);
@@ -173,6 +185,12 @@ function showMoreInfo(userId) {
   const currentMonth = today.getMonth(); // add 1 to get 1-12 instead of 0-11
   const monthName = getMonthName(currentMonth);
   let usermonth = generateClockInAndOutTable(userId , currentMonth, currentYear);
+  let lastmonth = currentMonth - 1;
+  let curYear = currentYear
+  if(currentMonth === 0){
+    curYear = currentYear - 1;
+    lastmonth = 11;
+  }
 
   const modalHtml = `
     <div class="toolmodal active" id="${modalId}">
@@ -182,8 +200,9 @@ function showMoreInfo(userId) {
         <h2>${user.firstName} ${user.lastName}</h2>
         <h4>${monthName}</h4>
         </div>
-        <div>${usermonth}</div>
+        <div id="usermonth">${usermonth}</div>
         <div class="d-flex flex-row justify-content-end">
+        <button id="prevMonth" class="btn btn-primary mr-2" onclick="prevMonth(${userId},${lastmonth},${curYear})">Zobrazit předchozí měsíc</button>
         <button class="btn btn-light mr-3" onclick="closeModal('${modalId}')">Zavřít</button>
         </div>
       </div>

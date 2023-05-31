@@ -185,6 +185,132 @@ function saveUserUrl(userid, url) {
 
 }
 
+function saveUser(userid,firstname,lastname) {
+  let users = getUsers()
+  users.forEach(user => {
+    if(user.id === userid) {
+      user.firstName = firstname
+      user.lastName = lastname
+    }
+  });
+  fs.writeFileSync(path.join(__dirname, '../json/users.json'), JSON.stringify(users));
+
+}
+function createUser(firstName, lastName) {
+  let users = getUsers();
+  let maxId = 0;
+
+  users.forEach(user => {
+    if (user.id > maxId) {
+      maxId = user.id;
+    }
+  });
+
+  const newUser = {
+    id: maxId + 1,
+    firstName: firstName,
+    lastName: lastName,
+    photo: ""
+  };
+
+  users.push(newUser);
+  fs.writeFileSync(path.join(__dirname, '../json/users.json'), JSON.stringify(users));
+}
+
+function showErrorModal(message) {
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100%';
+  overlay.style.height = '100%';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  overlay.style.zIndex = '9998';
+
+  // Create modal
+  const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '50%';
+  modal.style.left = '50%';
+  modal.style.transform = 'translate(-50%, -50%)';
+  modal.style.backgroundColor = '#fff';
+  modal.style.border = '1px solid #000';
+  modal.style.padding = '20px';
+  modal.style.zIndex = '9999';
+
+  const messageElement = document.createElement('p');
+  messageElement.innerText = message;
+  modal.appendChild(messageElement);
+
+  const closeButton = document.createElement('button');
+  closeButton.style.borderRadius = '12px';
+  closeButton.style.backgroundColor = 'black';
+  closeButton.style.color = 'white';
+  closeButton.innerText = 'Zavřít';
+  closeButton.addEventListener('click', () => {
+    document.body.removeChild(overlay);
+    document.body.removeChild(modal);
+  });
+  modal.appendChild(closeButton);
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(modal);
+}
+
+function deleteUser(userId) {
+  
+  const jsonData = JSON.parse(fs.readFileSync(path.join(__dirname, '../json/users.json'), 'utf8'));
+
+  const updatedData = jsonData.filter(user => user.id !== userId);
+
+  fs.writeFileSync(path.join(__dirname, '../json/users.json'), JSON.stringify(updatedData));
+
+  console.log(`User with ID ${userId} has been deleted from the JSON file.`);
+}
+
+const calculateWorkTime = (userId, year, month) => {
+  const timeLogData = getTimelog();
+  let totalWorkTime = 0;
+
+  for (const dayData of timeLogData) {
+    const date = new Date(dayData.date);
+    if (date.getFullYear() === year && date.getMonth() === month) {
+      for (const userData of dayData.users) {
+        if (userData.id === userId) {
+          for (const shiftData of Object.values(userData)) {
+            if (shiftData.clockedin && shiftData.clockedout) {
+              const clockedin = new Date(shiftData.clockedin);
+              const clockedout = new Date(shiftData.clockedout);
+
+              // Round clockedin to the nearest quarter-hour
+              const roundedClockedin = new Date(clockedin);
+              roundedClockedin.setMinutes(Math.ceil(clockedin.getMinutes() / 15) * 15);
+
+              // Round clockedout down to the previous quarter-hour
+              const roundedClockedout = new Date(clockedout);
+              roundedClockedout.setMinutes(Math.floor(clockedout.getMinutes() / 15) * 15);
+
+              // Calculate work time using rounded times
+              const workTime = roundedClockedout - roundedClockedin;
+              if(workTime > 0){
+                totalWorkTime += workTime;
+              }
+              
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Convert totalWorkTime to hours
+  let hours = totalWorkTime / 3600000;
+  hours = Math.floor(hours)
+  return hours;
+};
+
+
   //api for functions
   contextBridge.exposeInMainWorld('api', {
     //get users
@@ -205,6 +331,11 @@ function saveUserUrl(userid, url) {
     verifyPassword:(password) => verifyPassword(password),
     savePassword: (password) => savePassword(password),
     hashPassword: (password) => hashPassword(password),
+    //admin user method
+    deleteUser:(userid) => deleteUser(userid),
+    saveUser:(userid,firstname,lastname)=> saveUser(userid,firstname,lastname),
+    createUser:(firstName, lastName) => createUser(firstName, lastName),
+    calculateWorkTime:(userId, year, month) => calculateWorkTime(userId, year, month)
   });
 
 

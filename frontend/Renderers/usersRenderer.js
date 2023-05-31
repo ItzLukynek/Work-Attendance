@@ -95,7 +95,18 @@ async function renderUsersPage() {
 
 
 
-function showErrorModal(message) {
+  function showErrorModal(message) {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.zIndex = '9998';
+  
+    // Create modal
     const modal = document.createElement('div');
     modal.style.position = 'fixed';
     modal.style.top = '50%';
@@ -105,18 +116,25 @@ function showErrorModal(message) {
     modal.style.border = '1px solid #000';
     modal.style.padding = '20px';
     modal.style.zIndex = '9999';
+    modal.style.color = 'black';
+    modal.style.borderRadius = '12px'
   
     const messageElement = document.createElement('p');
     messageElement.innerText = message;
     modal.appendChild(messageElement);
   
     const closeButton = document.createElement('button');
-    closeButton.innerText = 'Close';
+    closeButton.style.borderRadius = '12px';
+    closeButton.style.backgroundColor = 'black';
+    closeButton.style.color = 'white';
+    closeButton.innerText = 'Zavřít';
     closeButton.addEventListener('click', () => {
+      document.body.removeChild(overlay);
       document.body.removeChild(modal);
     });
     modal.appendChild(closeButton);
   
+    document.body.appendChild(overlay);
     document.body.appendChild(modal);
   }
 document.addEventListener('DOMContentLoad',renderUsersPage());

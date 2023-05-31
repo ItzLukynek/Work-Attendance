@@ -6,9 +6,264 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+      margin: 0;
+      
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    
+    #admincontent {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 20px auto;
+      max-width: 1200px;
+      padding: 20px;
+      
+    }
+    .usertable ,.toolfunctions{
+      margin: 0px 10px 10px 10px;
+    }
+    
+    .usertable {
+      flex: 1 1 500px;
+      
+      width: 100%;
+      height: 100%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      max-height: 450px;
+      overflow: auto;
+    }
+    @media(min-width: 768px) {
+      .usertable {
+        
+      }
+    }
+    
+    h2{
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .usertable table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    
+    .usertable td {
+      padding: 10px;
+      
+      text-align: start;
+    }
+    .usertable tr{
+    
+    }
+
+    
+    .usertable th {
+      padding: 10px;
+      font-weight: bold;
+      font-size: 22px;
+      
+    }
+    thead{
+      border-bottom: white 2px solid;
+    }
+    .usertable tr:last-child{
+      border-bottom: none;
+    }
+
+    .usertable td:last-child {
+      width: 35px;
+      
+    }
+    
+    .usertable a {
+      display: inline-block;
+      padding: 5px;
+      color: #fff;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    
+    
+    
+    
+    .toolfunctions {
+      flex: 1 1 300px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+   
+    
+    .toolfunctions p {
+      margin: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+    
+    .toolfunctions p a {
+      display: block;
+      padding: 5px;
+      color: #fff;
+      background-color: #4CAF50;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .tool-card{
+      border-radius: 10px;
+      background-color: #222;
+      padding: 10px;
+      color: white;
+    }
+    .card{
+      background-color: #222;
+      border: none !important;;
+    }
+
+    .info-icon{
+      border-radius: 8px;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .toolmodal h2{
+        font-size: 25px;
+        font-weight: bold;
+        color: white;
+    }
+    .toolmodal {
+        
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.toolmodal.active {
+  opacity: 1;
+}
+
+.toolmodal-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+
+}
+
+.toolmodal.active .toolmodal-background {
+  opacity: 1;
+}
+.toolmodal-content{
+    text-align: center;
+    background-color: #222;
+    padding: 20px 35px;
+    border-radius: 10px;
+    color: white;
+}
+     .timetable{
+        max-height: 400px;
+     } 
+     .clockinout-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.clockinout-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .clockinout-table div div  div {
+    padding: 8px;
+    text-align: center;
+   
+    border-collapse: collapse;
+    width: 100px;
+    font-size: 18px;
+
+  }
+  
+  .clockinout-table div div {
+    border-bottom: 1px  #333333 solid;
+  }
+ 
+  
+
+  .clockinout-table .date {
+    font-weight: bold;
+  }
+
+  .clockinout-table .weekday {
+    font-size: smaller;
+  }
+
+  .clockinout-table .clock {
+    font-size: smaller;
+  }
+
+  .clockinout-table td, .clockinout-table th{
+  border: 2px solid #333333;
+  border-collapse: collapse;
+  padding: 4px 12px;
+  font-size: calc(1.1rem);
+}
+.special-day {
+  background-color: rgb(22, 22, 22);
+}
+.h4{
+    font-size: 15px;
+    font-weight: bold;
+}
+</style>
 </head>
-<body>
-    <h1>admin</h1>
+    <body>
+        <div class="w-100 d-flex flex-row row justify-content-around   " id="admincontent">
+            <div id="usertable" class="left tool-card usertable h-100">
+              
+            </div>
+            <div id="toolfunctions " class="right tool-card toolfunctions">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <label for="search">Vyhledat uživatele</label>
+                  <input type="text" class="form-control" placeholder="Vyhledat..." id="search-input">
+                </div>
+                    <div class="card-body">
+                        <h4 class="h4">Další možnosti</h4>
+                        <div class="d-flex flex-column">
+                        <button id="addUser" class="btn btn-primary mt-1 w-50">Přidat uživatele</button>
+                        <button id="changePassword" class="btn btn-primary mt-3 w-50">Změnit heslo</button>
+                        </div>
+                    </div>
+              </div>
+              
+            </div>
+            
+          </div>
+          
+    </body>
     <script src="../Renderers/adminRenderer.js"></script>
-</body>
+
 </html>
