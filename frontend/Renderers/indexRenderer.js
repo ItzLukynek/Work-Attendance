@@ -1,5 +1,6 @@
 //getting messages from the preload process
 window.addEventListener('message', event => {
+    
     let message
     switch (event.data.type) {
         case 'USER_CLOCKED_IN':
@@ -22,13 +23,32 @@ window.addEventListener('message', event => {
             showErrorModal(message);
     }
   });
-  
 
-  
+  window.api.lunchBreak((callback) =>{
+    $('#content').load('../view/users.html');
+    console.log("REFRESH")
+  })
+
+  function midnightReload() {
+    const now = new Date();
+    const millisUntilMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1, // Tomorrow
+      0, // Midnight hours
+      0, // Midnight minutes
+      0 // Midnight seconds
+    ) - now;
+    setTimeout(() => {
+        $('#content').load('../view/users.html'); //reload at midnight
+      midnightReload(); // Schedule the task again for the next midnight
+    }, millisUntilMidnight);
+}
 
 
 // for loading html files as pages
 $(document).ready(async function() {
+  midnightReload();
     $('#content').load('../view/users.html'); //load users.html as default page
     $('.load-page').click(function(e) {
         $(".nav-link").removeClass("active");
@@ -42,6 +62,12 @@ $(document).ready(async function() {
 //controls of the window
 const minimizeButton = document.querySelector('.minimize')
 const closeButton = document.querySelector('.closew')
+const minimizeButton2 = document.querySelector('.minimize2')
+
+
+minimizeButton2.addEventListener('click', () => {
+  window.api.minimize()
+})
 
 minimizeButton.addEventListener('click', () => {
   window.api.minimize()

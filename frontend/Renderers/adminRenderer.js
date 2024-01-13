@@ -1,19 +1,222 @@
 
 
-$(document).ready(()=>{
+$(document).ready(async () =>{
     loadtable();
     searchBar()
+    files();
     document.getElementById("addUser").addEventListener("click",(event)=>{
         createUser()
     })
     document.getElementById("changePassword").addEventListener("click",(event)=>{
         changePassword()
     })
+   
+  
+    // Populate yearSelect
+    populateYearSelect();
     
   });
 
+async function files(){
+  const userSelect = document.getElementById('userSelect');
+  const monthSelect = document.getElementById('monthSelect');
+  const yearSelect = document.getElementById('yearSelect');
+  const exportForm = document.getElementById('exportForm');
+
+  // Fetch users and populate the user select dropdown
+  const users = await window.api.getUsers();
+  users.forEach((user) => {
+    const option = document.createElement('option');
+    option.value = user.id;
+    option.textContent = `${user.firstName} ${user.lastName}`;
+    userSelect.appendChild(option);
+  });
+
+  // Get the current year and populate the year select dropdown
+  const currentYear = new Date().getFullYear();
+  for (let year = currentYear; year >= currentYear - 10; year--) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    yearSelect.appendChild(option);
+  }
+
+  // Define the months array
+  const months = [
+    "Leden", "Únor", "Březen", "Duben", "Květen", "Červen",
+    "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"
+  ];
+
+  // Populate the month select dropdown
+  months.forEach((month, index) => {
+    const option = document.createElement('option');
+    option.value = index + 1;
+    option.textContent = month;
+    monthSelect.appendChild(option);
+  });
+
+  exportForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const selectedUserId = parseInt(userSelect.value);
+    const selectedMonth = parseInt(monthSelect.value);
+    const selectedYear = parseInt(yearSelect.value);
+
+    // Call the corresponding export functions based on the selected options
+    if (event.submitter.id === 'button1') {
+      await exportDataForChosenUser(selectedUserId, selectedMonth, selectedYear);
+    } else if (event.submitter.id === 'button2') {
+      await exportDataForOneMonth(selectedMonth, selectedYear, 'csv', 'local');
+    } else if (event.submitter.id === 'button3') {
+      await exportDataForOneMonth(selectedMonth, selectedYear, 'csv', 'choose');
+    } else if (event.submitter.id === 'button4') {
+      await exportDataForOneYear(selectedUserId, selectedYear, 'excel', 'local');
+    } else if (event.submitter.id === 'button5') {
+      await exportDataForOneYear(selectedUserId, selectedYear, 'excel', 'choose');
+    }
+  });
+}
+async function exportDataForChosenUser(userId, month, year) {
+  const data = await window.api.getTimelog();
+
+  // Filter data for the selected user and month
+  const filteredData = data.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    return (
+      entryDate.getFullYear() === year &&
+      entryDate.getMonth() === month - 1 &&
+      entry.users.some((user) => user.id === userId)
+    );
+  });
+
+  let sheetData = [];
+  let users = window.api.getUsers();
+  let user = users.find((user) => user.id === userId);
+  const name = user.firstName + ' ' + user.lastName;
+  const nameRow = [name, '', '', '', '','','',''];
+  sheetData.push(nameRow);
+  const headers = ['Datum', ' Dop ', ' Dop ', ' Odp ', ' Odp ',' Hod. ', ' Dov.',' Sv.'];
+  sheetData.push(headers);
+
+  // Helper function to format time as 'HH:mm' (hours and minutes) or '-'
+  function formatTime(dateTime) {
+    if (!dateTime) return '-';
+    const d = new Date(dateTime);
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  // Calculate the number of days in the selected month
+  const lastDayOfMonth = new Date(year, month, 0).getDate();
+
+  // Generate data for all days of the selected month
+  for (let day = 1; day <= lastDayOfMonth; day++) {
+    const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const entry = filteredData.find((entry) => entry.date === dateString);
+    const formatedDate = `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${year}`;
+    let data_array = []
+    let dayWorkTime = 0;
+    
+    if(entry?.users[0]?.shift0 && entry.users[0].shift0.clockedin !== "" && entry.users[0].shift0.clockedout !== ""){
+      data_array.push({
+        'clockedin': entry.users[0].shift0.clockedin,
+        'clockedout':entry.users[0].shift0.clockedout
+      })
+    }
+    if(entry?.users[0]?.shift1 && entry.users[0].shift1.clockedin !== "" && entry.users[0].shift1.clockedout !== ""){
+      data_array.push({
+        'clockedin': entry.users[0].shift1.clockedin,
+        'clockedout':entry.users[0].shift1.clockedout
+      })
+    }
+
+    
+    
+    if(data_array.length > 0){
+      dayWorkTime= calculateOneDayTime(data_array);
+    }
+    console.log(dayWorkTime);
+    const row = [
+      dateString,
+      entry?.users[0]?.shift0 ? formatTime(entry.users[0].shift0.clockedin) : '-',
+      entry?.users[0]?.shift0 ? formatTime(entry.users[0].shift0.clockedout) : '-',
+      entry?.users[0]?.shift1 ? formatTime(entry.users[0].shift1.clockedin) : '-',
+      entry?.users[0]?.shift1 ? formatTime(entry.users[0].shift1.clockedout) : '-',
+      dayWorkTime,
+    ];
+    sheetData.push(row);
 
 
+  }
+ sheetData.push(['','','','','','Celk. H','Celk. H']);
+
+  const filename = `export_chosen_user_${userId}_${month}_${year}`;
+  await window.api.exportDataToCSVOneUserMonth(sheetData, filename);
+
+}
+function calculateOneDayTime(data) {
+  let totalWorkTime = 0;
+  for (let index = 0; index < data.length; index++) {
+    // Round clockedin to the nearest quarter-hour
+    const roundedClockedin = new Date(data[index].clockedin);
+    roundedClockedin.setMinutes(Math.ceil(roundedClockedin.getMinutes() / 15) * 15);
+
+    // Round clockedout down to the previous quarter-hour
+    const roundedClockedout = new Date(data[index].clockedout);
+    roundedClockedout.setMinutes(Math.floor(roundedClockedout.getMinutes() / 15) * 15);
+
+    // Calculate work time using rounded times
+    const workTime = roundedClockedout - roundedClockedin;
+    if (workTime > 0) {
+      totalWorkTime += workTime;
+    }
+  }
+  return parseFloat((totalWorkTime / 3600000).toFixed(2)); // Divide by 3600000 to get the work time in hours
+}
+
+
+async function exportDataForOneMonth(month, year, type, pathType) {
+  const data = await window.api.getTimelog();
+  const filteredData = data.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    return entryDate.getMonth() === month - 1 && entryDate.getFullYear() === year;
+  });
+
+  if (filteredData.length === 0) {
+    alert('No data found for the selected month and year.');
+    return;
+  }
+
+  const filename = `export_one_month_${month}_${year}`;
+  if (pathType === 'local') {
+    await window.api.exportDataToCSV(filteredData, filename);
+  } else if (pathType === 'choose') {
+    showSaveDialog(null, { type, data: filteredData, filename });
+  }
+}
+
+async function exportDataForOneYear(userId, year, type, pathType) {
+  const data = await window.api.getTimelog();
+  const filteredData = data.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    return (
+      entryDate.getFullYear() === year &&
+      entry.users.some((user) => user.id === userId)
+    );
+  });
+
+  if (filteredData.length === 0) {
+    alert('No data found for the selected user and year.');
+    return;
+  }
+
+  const filename = `export_one_year_${userId}_${year}`;
+  if (pathType === 'local') {
+    await window.api.exportDataToExcel(filteredData, filename);
+  } else if (pathType === 'choose') {
+    showSaveDialog(null, { type, data: filteredData, filename });
+  }
+}
 function loadtable() {
     let users = window.api.getUsers();
     let usertable = document.getElementById("usertable");
@@ -419,3 +622,33 @@ function showModal(message, modalId){
         closeModal(modalId)
     })
   }
+
+
+  //File managment 
+  
+    // Function to populate the userSelect element
+    function populateUserSelect(users) {
+      const userSelect = document.getElementById('userSelect');
+      for (const user of users) {
+        const option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = `${user.firstName} ${user.lastName}`;
+        userSelect.appendChild(option);
+      }
+    }
+  
+    // Function to populate the yearSelect element with the last 10 years
+    function populateYearSelect() {
+      const yearSelect = document.getElementById('yearSelect');
+      const currentYear = new Date().getFullYear();
+      for (let year = currentYear; year >= currentYear - 10; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      }
+    }
+  
+    // Call the API to get user data from the main process
+    
+

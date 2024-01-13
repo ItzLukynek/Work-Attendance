@@ -171,7 +171,7 @@ function showUserSettings(userId) {
 
 function prevMonth(userId,month,year){
   let usermonth = generateClockInAndOutTable(userId , month, year);
-
+  document.getElementById("monthnameperson").innerHTML = getMonthName(month);
   document.getElementById("usermonth").innerHTML = usermonth;
   document.getElementById("prevMonth").disabled = true;
 }
@@ -198,7 +198,7 @@ function showMoreInfo(userId) {
       <div class="toolmodal-content">
         <div class='text-center'>
         <h2>${user.firstName} ${user.lastName}</h2>
-        <h4>${monthName}</h4>
+        <h4 id="monthnameperson">${monthName}</h4>
         </div>
         <div id="usermonth">${usermonth}</div>
         <div class="d-flex flex-row justify-content-end">

@@ -3,6 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const bcrypt = require('bcrypt');
+const ExcelJS = require('exceljs');
+const XLSX = require('xlsx');
+const XlsxPopulate = require('xlsx-populate');
+const XLSXStyle = require('xlsx-style');
+
 //get data from users.json
 function getUsers() {
   try {
@@ -83,6 +88,9 @@ function clockIn(userId) {
 
   const userEntry = dayEntry.users.find(entry => entry.id === userId);
 
+  const now = moment();
+  const lunchTime = moment().set({ hour: 12, minute: 45, second: 0 });
+
   // Check if user is already clocked in for shift0
   if (userEntry && userEntry.shift0.clockedin && userEntry.shift0.clockedout) {
     // Clock in for shift1
@@ -92,31 +100,51 @@ function clockIn(userId) {
       return;
     }
 
-    userEntry.shift1.clockedin = moment().format('YYYY-MM-DD HH:mm:ss');
-    window.postMessage({ type: 'USER_CLOCKED_IN', text: 'User clocked in for shift1 successfully' });
-    console.log('User clocked in for shift1 successfully');
-    info = true;
-  } else {
-    // Clock in for shift0
-    if (userEntry) {
+    // Clock in after lunch time
+    if (now.isAfter(lunchTime)) {
+      userEntry.shift1.clockedin = now.format('YYYY-MM-DD HH:mm:ss');
+      window.postMessage({ type: 'USER_CLOCKED_IN', text: 'User clocked in for shift1 successfully' });
+      console.log('User clocked in for shift1 successfully');
+      info = true;
+    } else {
+      // Clock in before lunch time
       window.postMessage({ type: 'USER_ALREADY_CLOCKED_IN', text: 'User is already clocked in for shift0', clockin: userEntry.shift0.clockedin });
       console.log('User is already clocked in for shift0');
       return;
     }
+  } else {
+    
 
-    dayEntry.users.push({
-      id: userId,
-      shift0: {
-        clockedin: moment().format('YYYY-MM-DD HH:mm:ss'),
-        clockedout: ''
-      },
-      shift1: {
-        clockedin: '',
-        clockedout: ''
-      }
-    });
-    window.postMessage({ type: 'USER_CLOCKED_IN', text: 'User clocked in for shift0 successfully' });
-    console.log('User clocked in for shift0 successfully');
+    if (now.isAfter(lunchTime)) {
+      dayEntry.users.push({
+        id: userId,
+        shift0: {
+          clockedin: '',
+          clockedout: ''
+        },
+        shift1: {
+          clockedin: now.format('YYYY-MM-DD HH:mm:ss'),
+          clockedout: ''
+        }
+      });
+      window.postMessage({ type: 'USER_CLOCKED_IN', text: 'User clocked in for shift1 successfully' });
+      console.log('User clocked in for shift1 successfully');
+      info = true;
+    } else {
+      dayEntry.users.push({
+        id: userId,
+        shift0: {
+          clockedin: now.format('YYYY-MM-DD HH:mm:ss'),
+          clockedout: ''
+        },
+        shift1: {
+          clockedin: '',
+          clockedout: ''
+        }
+      });
+      window.postMessage({ type: 'USER_CLOCKED_IN', text: 'User clocked in for shift0 successfully' });
+      console.log('User clocked in for shift0 successfully');
+    }
   }
 
   fs.writeFileSync(path.join(__dirname, '../json/timelog.json'), JSON.stringify(timeLog));
@@ -146,11 +174,14 @@ function clockOut(userId) {
     console.log('User is already clocked out for today');
     return;
   } else {
-    if (!userEntry.shift0.clockedout) {
-      userEntry.shift0.clockedout = moment().format('YYYY-MM-DD HH:mm:ss');
-    } else {
-      userEntry.shift1.clockedout = moment().format('YYYY-MM-DD HH:mm:ss');
+    const now = moment();
+    const lunchTime = moment().set({ hour: 12, minute: 45, second: 0 });
+
+    if (now.isAfter(lunchTime) && !userEntry.shift1.clockedout) {
+      userEntry.shift1.clockedout = now.format('YYYY-MM-DD HH:mm:ss');
       info = true;
+    } else if (!userEntry.shift0.clockedout) {
+      userEntry.shift0.clockedout = now.format('YYYY-MM-DD HH:mm:ss');
     }
 
     window.postMessage({ type: 'USER_CLOCKED_OUT', text: 'User clocked out successfully' });
@@ -160,6 +191,7 @@ function clockOut(userId) {
   fs.writeFileSync(path.join(__dirname, '../json/timelog.json'), JSON.stringify(timeLog));
   return info;
 }
+
 
 
 
@@ -266,6 +298,17 @@ function deleteUser(userId) {
 
   fs.writeFileSync(path.join(__dirname, '../json/users.json'), JSON.stringify(updatedData));
 
+   // Remove entries related to the deleted user from timelog
+   const timelog = getTimelog(); // Get timelog data
+   const updatedTimelog = timelog.map(entry => ({
+     ...entry,
+     users: entry.users.filter(user => user.id !== userId)
+   }));
+ 
+   // Write updated timelog data
+   fs.writeFileSync(path.join(__dirname, '../json/timelog.json'), JSON.stringify(updatedTimelog));
+ 
+
   console.log(`User with ID ${userId} has been deleted from the JSON file.`);
 }
 
@@ -309,6 +352,97 @@ const calculateWorkTime = (userId, year, month) => {
   hours = Math.floor(hours)
   return hours;
 };
+function getColumnWidths(data) {
+  const headers = ['Datum       ', 'Dopoledne', 'Dopoledne', 'Odpoledne', 'Odpoledne'];
+  const columnWidths = headers.map(header => {
+    return { wch: header.length + 2 }; // Add extra width for padding
+  });
+
+  data.forEach(entry => {
+    if (entry.users && Array.isArray(entry.users)) {
+      entry.users.forEach(user => {
+        const row = [
+          entry.date,
+          user.shift0 ? formatTime(user.shift0.clockedin) : '-',
+          user.shift0 ? formatTime(user.shift0.clockedout) : '-',
+          user.shift1 ? formatTime(user.shift1.clockedin) : '-',
+          user.shift1 ? formatTime(user.shift1.clockedout) : '-',
+        ];
+
+        row.forEach((cell, index) => {
+          columnWidths[index].wch = Math.max(columnWidths[index].wch, cell.length + 2); // Add extra width for padding
+        });
+      });
+    }
+  });
+
+  return columnWidths;
+}
+
+
+function formatTime(dateTime) {
+  if (!dateTime) return '-';
+  const d = new Date(dateTime);
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+
+
+async function exportDataToCSVOneUserMonth(data,filename){
+  
+    try {
+      
+    
+      const wb = await XlsxPopulate.fromBlankAsync();
+      const ws = wb.sheet('Sheet1');
+    
+      // Create a merge cell for the name (spanning multiple columns)
+      ws.range('A1:H1').merged(true).value(name).style({
+        bold: true,
+        horizontalAlignment: 'center',
+        verticalAlignment: 'center'
+      });
+
+     
+    
+      // Fill the worksheet with the data starting from the second row
+      ws.cell('A1').value(data);
+    
+      // Manually calculate column widths based on the content of the cells
+      const columnWidths = data.reduce((widths, row) => {
+        row.forEach((cell, colIndex) => {
+          const cellWidth = cell ? cell.toString().length : 0;
+          if (!widths[colIndex] || cellWidth > widths[colIndex]) {
+            widths[colIndex] = cellWidth;
+          }
+        });
+        return widths;
+      }, []);
+    
+      // Set the calculated column widths
+      columnWidths.forEach((width, colIndex) => {
+        ws.column(colIndex + 1).width(width + 2); // Add some padding
+      });
+    
+      const lastRow = data.length;
+      const sumFormula = `SUM(F1:F${lastRow})`;
+      ws.cell(`F${lastRow + 1}`).formula(sumFormula);
+
+      const sumFormula2 = `SUM(G1:G${lastRow})`;
+      ws.cell(`G${lastRow + 1}`).formula(sumFormula2);
+
+
+      const excelBuffer = await wb.outputAsync();
+    
+      // Use Buffer.from() instead of Buffer() to avoid deprecation warning
+      ipcRenderer.send('export-to-csv', { excelBuffer: Buffer.from(excelBuffer), filename });
+    } catch (error) {
+      console.error('Error exporting data to Excel:', error);
+    }
+    
+  }
 
 
   //api for functions
@@ -322,6 +456,7 @@ const calculateWorkTime = (userId, year, month) => {
     close: () => {
       ipcRenderer.send('window-close')
     },
+    lunchBreak:(callback) => ipcRenderer.on("lunch-reload",(callback)),
     clockIn: (userid) => clockIn(userid),
     clockOut: (userid) => clockOut(userid),
     getTimelog: () => getTimelog(),
@@ -335,7 +470,12 @@ const calculateWorkTime = (userId, year, month) => {
     deleteUser:(userid) => deleteUser(userid),
     saveUser:(userid,firstname,lastname)=> saveUser(userid,firstname,lastname),
     createUser:(firstName, lastName) => createUser(firstName, lastName),
-    calculateWorkTime:(userId, year, month) => calculateWorkTime(userId, year, month)
+    calculateWorkTime:(userId, year, month) => calculateWorkTime(userId, year, month),
+    getUserData: () => {
+      return ipcRenderer.invoke('get-user-data');
+    },
+    exportDataToCSVOneUserMonth: async (data,filename) => exportDataToCSVOneUserMonth(data,filename),
+    
   });
 
 

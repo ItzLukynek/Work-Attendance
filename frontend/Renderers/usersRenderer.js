@@ -59,17 +59,19 @@ async function renderUsersPage() {
       let userLog = todayLog?.users.find(u => u.id === user.id);
       let shift0 = userLog?.shift0;
       let shift1 = userLog?.shift1;
-      let clockInTime = shift0?.clockedin;
+      let clockInTime = shift0?.clockedin || shift1?.clockedin;
       let clockInDisabled = clockInTime ? 'disabled' : '';
       let clockOutTime = shift1?.clockedout;
       let clockOutDisabled = clockOutTime || !clockInTime ? 'disabled' : '';
       let clockat = "";
       let clockout = "";
-      if (clockInTime) {
-        clockat = ": " + clockInTime.substr(11, 5);
+      if (shift0?.clockedin && !shift1?.clockedin) {
+        clockat = ": " + shift0.clockedin.substr(11, 5);
+      } else if (shift1?.clockedin) {
+        clockat = ": " + shift1.clockedin.substr(11, 5);
       }
-      if (clockOutTime) {
-        clockout = ": " + clockOutTime.substr(11, 5);
+      if (shift1?.clockedout) {
+        clockout = ": " + shift1.clockedout.substr(11, 5);
       }
       let src = "../../public/Images/User.png";
       if (user.photo != "") {
@@ -91,6 +93,7 @@ async function renderUsersPage() {
     });
     userdiv.innerHTML = html;
   }
+  
   
 
 
